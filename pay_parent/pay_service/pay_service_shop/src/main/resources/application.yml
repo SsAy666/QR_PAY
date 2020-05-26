@@ -1,0 +1,57 @@
+server:
+  port: 6002
+logging:
+  level:
+    root: error
+prop:
+  #upload-folder: D:\Documents\HBuilderProject\QR_pay\
+  upload-folder: /usr/local/nginx/www/lzs/QR_pay/
+spring:
+  application:
+    name: shop
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://129.211.43.95:3306/pay_system_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: 123456Lzs#
+  jackson:
+    #time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  # 配置SpringMVC文件上传限制，默认1M。注意MB要大写，不然报错。SpringBoot版本不同，配置项不同
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  main:
+    allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
+eureka:
+  client:
+    service-url:
+      defaultZone: http://129.211.43.95:3399/eureka
+  instance:
+    prefer-ip-address: true
+feign:
+  hystrix:
+    command:
+      default:
+        execution:
+          isolation:
+            thread:
+              timeoutInMilliseconds: 5000  #熔断超时时间
+  ribbon:
+    ReadTimeout: 60000  #请求处理的超时时间
+    ConnectTimeout: 60000 #请求连接超时时间
+    MaxAutoRetries: 0 #对当前实例的重试次数
+    MaxAutoRetriesNextServer: 1 #切换实例的重试次数 1
+
+  client:
+    config:
+      default:                # 配置全局的feign的调用超时时间，如果有指定的服务配置，默认的配置不会生效
+        connectTimeout: 60000 # 指定的是消费者连接服务提供者的连接超时时间（单位是毫秒）
+        readTimeout: 20000    # 指定的是调用服务提供者的服务的超时时间（单位是毫秒）
+  eureka:
+    enable: true
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true

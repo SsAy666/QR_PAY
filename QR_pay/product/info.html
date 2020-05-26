@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>商品详情</title>
+		<link href="/QR_pay/resources/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<script src="/QR_pay/resources/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/bootstrap/js/bootstrap.min.js"></script>
+		<script src="/QR_pay/resources/js/vue.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/axios-0.18.0.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/jquery-lzs-0.0.1.js" type="text/javascript"></script>
+		<style>
+			a:hover {
+				text-decoration: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid" id="product">
+			<div id="header" style="min-height: 130px;">
+				<div class="col-md-12">
+					<img src="/QR_pay/resources/images/list_logo.png" />
+				</div>
+			</div>
+			<div class="container">
+				<div class="row">
+
+					<div style="margin:0 auto;width:950px;">
+						<div class="col-md-6">
+							<img style="opacity: 1;width:400px;height:350px;" title="" class="medium" :src="'/QR_pay/'+product.pimage">
+						</div>
+
+						<div class="col-md-6">
+							<div><strong>{{product.pname}}</strong></div>
+							<div style="border-bottom: 1px dotted #dddddd;width:350px;margin:10px 0 10px 0;">
+								<div>编号：{{product.pid}}</div>
+							</div>
+
+							<div style="margin:10px 0 10px 0;">
+								一口价: <strong style="color:#ef0101;">&yen;<span>{{product.shopPrice}}</span>元/份</strong> 参 考 价: <del>￥{{product.marketPrice}}元/份</del>
+							</div>
+
+							<div style="margin:10px 0 10px 0;">促销:
+								<a target="_blank" title="限时抢购 (2020-03-30 ~ 2020-06-01)" style="background-color: #f07373;">限时抢购</a>
+							</div>
+
+							<div style="padding:10px;border:1px solid #e7dbb1;width:330px;margin:15px 0 10px 0;;background-color: #fffee6;">
+								<div style="border-bottom: 1px solid #faeac7;margin-top:20px;padding-left: 10px;">购买数量:
+									<input id="count" name="quantity" v-model="pnum" maxlength="4" size="10" type="text" required data-eye> </div>
+
+								<div style="margin:20px 0px 10px 0px;padding-left: 70px;">
+									<a href="javascript:;">
+										<input id="addItemBtn" style="background: url('/QR_pay/resources/img/product.gif') no-repeat scroll 0 -600px rgba(0, 0, 0, 0);height:36px;width:127px;" value="确认购买" type="button" @click="payBtn()">
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="clearfix"></div>
+					<div style="width:950px;margin:0 auto;">
+
+						<div style="background-color:#d3d3d3;width:930px;padding:10px 10px;margin:10px 0 10px 0;">
+							<strong>商品参数</strong>
+						</div>
+						<div style="margin-top:10px;width:900px;">
+							{{product.pdesc}}
+						</div>
+
+						<br>
+						<div style="background-color:#d3d3d3;width:900px;">
+							<table class="table table-bordered">
+								<tbody>
+									<tr class="active">
+										<th><strong>商品评论</strong></th>
+									</tr>
+									<tr class="warning">
+										<th>暂无商品评论信息
+											<a>[发表商品评论]</a>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<div style="background-color:#d3d3d3;width:900px;">
+							<table class="table table-bordered">
+								<tbody>
+									<tr class="active">
+										<th><strong>商品咨询</strong></th>
+									</tr>
+									<tr class="warning">
+										<th>暂无商品咨询信息
+											<a>[发表商品咨询]</a>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br>
+			<br>
+			<br>
+			<div id="footer" style="min-height: 203px;">
+				<div style="text-align: center;margin-top: 5px;margin-bottom:20px;">
+					Copyright &copy; QR Pay System
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		function timestampToTime(timestamp) {
+			var date = new Date(timestamp * 1000); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+			var Y = date.getFullYear() + '-';
+			var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+			var D = date.getDate() + ' ';
+			var h = date.getHours() + ':';
+			var m = date.getMinutes() + ':';
+			var s = date.getSeconds();
+			return Y + M + D + h + m + s;
+		}
+
+		new Vue({
+			el: '#product',
+			data: {
+				product: {},
+				pnum:"",
+				backendUrl: "http://www.qrpaylzs.store:6002",
+				userUrl: "http://www.qrpaylzs.store:6001",
+				webUrl: "http://www.qrpaylzs.store:8020/QR_pay"
+			},
+			beforeMount: function() {
+				var pid = HM.getParameter("pid");
+				axios.defaults.withCredentials = true;
+				axios.get(this.backendUrl + "/product/findProductById?pid=" + pid).then((res) => {
+					if(res.data.flag) {
+						this.product = res.data.data;
+					} else {
+						alert(res.data.message);
+					}
+				})
+			},
+			methods: {
+				payBtn() {
+					// 获取当前系统时间戳
+					var timestamp = parseInt(new Date().getTime() / 1000);
+					var time = timestampToTime(timestamp);
+					var param = {
+						sid: this.product.sid,
+						pid: this.product.pid,
+						pname: this.product.pname,
+						shopPrice: this.product.shopPrice,
+						pnum: this.pnum,
+						timeStamp: time
+					}
+					axios.defaults.withCredentials = true;
+					axios.post(this.backendUrl + "/shop/PayInfo2QR", param).then((res) => {
+						if(res.data.flag) {
+							var qrPic = res.data.data;
+							location.href = this.webUrl + "/product/QRPay.html?qrPic=" + qrPic;
+						} else {
+							alert(res.data.message);
+						}
+					})
+				}
+			}
+		})
+	</script>
+
+</html>

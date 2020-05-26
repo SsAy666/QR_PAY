@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link href="/QR_pay/resources/css/shop.css" type="text/css" rel="stylesheet" />
+		<link href="/QR_pay/resources/css/Sellerber.css" type="text/css" rel="stylesheet" />
+		<link href="/QR_pay/resources/css/bkg_ui.css" type="text/css" rel="stylesheet" />
+		<script src="/QR_pay/resources/js/jquery-1.9.1.min.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/layer/layer.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/Sellerber.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/shopFrame.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/jquery.cookie.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/vue.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/axios-0.18.0.js" type="text/javascript"></script>
+		<title>收入明细</title>
+	</head>
+
+	<body>
+		<div class="margin Competence_style" id="page_style">
+
+			<div class="compete_list">
+				<table id="sample_table" class="table table_list table_striped table-bordered dataTable no-footer">
+					<thead>
+						<tr>
+							<th>交易ID</th>
+							<th>用户ID</th>
+							<th>收入金额</th>
+							<th class="hidden-480">交易时间</th>
+						</tr>
+					</thead>
+					<tbody v-for="record in records">
+						<tr>
+							<td>{{record.id}}</td>
+							<td>{{record.shopId}}</td>
+							<td>{{record.amount}}</td>
+							<td>{{renderTime(record.createTime)}}</td>
+
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</body>
+
+</html>
+<script>
+	new Vue({
+		el: '#page_style',
+		data: {
+			shop: {},
+			records: {},
+			backendUrl: "http://www.qrpaylzs.store:6002",
+			webUrl: "http://www.qrpaylzs.store:8020/QR_pay"
+		},
+		beforeMount: function() {
+			axios.defaults.withCredentials = true;
+			axios.get(this.backendUrl + "/shop/getName").then((res) => {
+				console.log(res.data.flag)
+				if(res.data.flag) {
+					this.shop = res.data.data;
+					axios.defaults.withCredentials = true;
+					axios.get(this.backendUrl + "/shop/payDetails?id=" + this.shop.id).then((res) => {
+						if(res.data.flag) {
+							this.records = res.data.data;
+							console.log(this.records);
+						} else {
+							alert(res.data.message);
+						}
+					})
+				} else {
+					alert(res.data.message);
+					location.href = this.webUrl + "/shop/login.html";
+				}
+			})
+		},
+		methods: {
+			renderTime(date) {
+				var dateee = new Date(date).toJSON();
+				return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
+			}
+		}
+	})
+</script>

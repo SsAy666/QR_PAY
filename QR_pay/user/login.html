@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<link>
+	<meta charset="utf-8">
+	<meta name="author" content="Kodinger">
+	<title>用户登录</title>
+	<link href="/QR_pay/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="/QR_pay/resources/css/my-login.css" rel="stylesheet" type="text/css">
+	</head>
+
+	<body class="my-login-page">
+		<section class="h-100">
+			<div class="container h-100">
+				<div class="row justify-content-md-center h-100">
+					<div class="card-wrapper">
+						<div class="brand">
+							<img src="/QR_pay/resources/images/avatar1.png" />
+						</div>
+						<div id="app">
+							<div class="card fat">
+								<div class="card-body">
+									<h4 class="card-title">用户登录</h4>
+									<form>
+
+										<div class="form-group">
+											<label for="username">用户名</label>
+
+											<input id="username" type="text" class="form-control" v-model="user.username" value="" required autofocus>
+										</div>
+
+										<div class="form-group">
+											<label for="password">密码
+
+									</label>
+											<input id="password" type="password" class="form-control" v-model="user.password" required data-eye>
+										</div>
+
+										<div class="form-group">
+											<label>
+										<input type="checkbox" name="remember"> 记住密码
+										<a href="/QR_pay/user/forgot.html" class="float-right">忘记密码</a>
+									</label>
+										</div>
+
+										<div class="form-group no-margin">
+											<button type="button" class="btn btn-primary btn-block" @click="login()">
+										登录
+									</button>
+										</div>
+										<div class="margin-top20 text-center">
+											没有账号？
+											<a href="/QR_pay/user/register.html">注册</a>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<div class="footer">
+							Copyright &copy; QR Pay System
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<script src="/QR_pay/resources/js/jquery.min.js"></script>
+		<script src="/QR_pay/resources/bootstrap/js/bootstrap.min.js"></script>
+		<script src="/QR_pay/resources/js/vue.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/axios-0.18.0.js" type="text/javascript"></script>
+
+		<script>
+			new Vue({
+				el: '#app',
+				data: {
+					user: {
+						username: "",
+						password: ""
+					},
+					backendUrl: "http://www.qrpaylzs.store:6001",
+					webUrl: "http://www.qrpaylzs.store:8020/QR_pay"
+				},
+				methods: {
+					// 重置表单
+					resetForm() {
+						//登录失败，清除上次的表单数据
+						this.user = {};
+					},
+					login() {
+						axios.defaults.withCredentials = true;
+						/*axios.defaults.crossDomain=true;*/
+						axios.post(this.backendUrl + "/user/login", this.user).then((res) => {
+							if(res.data.flag) {
+								location.href = this.webUrl + "/user/home.html";
+							} else {
+								alert(res.data.message);
+								this.resetForm();
+							}
+						})
+					}
+				}
+			})
+		</script>
+	</body>
+
+</html>

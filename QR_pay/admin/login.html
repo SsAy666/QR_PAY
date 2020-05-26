@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>登录移动支付服务器</title>
+		<meta name="keywords" content="移动支付服务器">
+		<meta name="description" content="移动支付服务器">
+		<meta name="viewport" content="width=device-width">
+		<link href="/QR_pay/resources/css/base.css" rel="stylesheet" type="text/css">
+		<link href="/QR_pay/resources/css/login.css" rel="stylesheet" type="text/css">
+	</head>
+
+	<body>
+
+		<div class="login">
+			<div id="app">
+				<form id="form">
+					<div class="logo"></div>
+					<div class="login_form">
+						<div class="user">
+							<input class="text_value" value="" v-model="admin.username" type="text" id="username" placeholder="username">
+							<input class="text_value" value="" v-model="admin.password" type="password" id="password" placeholder="password">
+						</div>
+						<button class="button" type="button" @click="login()">登录</button>
+					</div>
+
+					<div id="tip">
+						<p style="color: red;font-size:20px" v-if="flag">{{msg}}</p>
+					</div>
+
+					<div class="foot">
+						Copyright © QR Pay System
+					</div>
+				</form>
+			</div>
+		</div>
+		<script>
+			var basedir = '../resources/ui/';
+		</script>
+		<script src="/QR_pay/resources/ui/do.js"></script>
+		<script src="/QR_pay/resources/ui/config.js"></script>
+		<script src="/QR_pay/resources/js/vue.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/axios-0.18.0.js" type="text/javascript"></script>
+		<script>
+			new Vue({
+				el: '#app',
+				data: {
+					admin: {
+						username: "",
+						password: ""
+					},
+					flag: false,
+					msg: "",
+					backendUrl: "http://www.qrpaylzs.store:6003",
+					webUrl: "http://www.qrpaylzs.store:8020/QR_pay"
+				},
+				methods: {
+					// 重置表单
+					resetForm() {
+						//登录失败，清除上次的表单数据
+						this.admin = {};
+					},
+					login() {
+						axios.defaults.withCredentials = true;
+						axios.post(this.backendUrl + "/admin/login", this.admin).then((res) => {
+							if(res.data.flag) {
+								location.href = this.webUrl + "/admin/pay_list.html";
+							} else {
+								this.flag = !(res.data.flag);
+								this.msg = res.data.message;
+								this.resetForm();
+							}
+						})
+					}
+				}
+			})
+		</script>
+	</body>
+
+</html>

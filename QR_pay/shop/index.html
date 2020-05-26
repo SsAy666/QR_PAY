@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Access-Control-Allow-Origin" content="*" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link href="/QR_pay/resources/css/shop.css" type="text/css" rel="stylesheet" />
+		<link href="/QR_pay/resources/css/Sellerber.css" type="text/css" rel="stylesheet" />
+		<link href="/QR_pay/resources/css/bkg_ui.css" type="text/css" rel="stylesheet" />
+		<link href="/QR_pay/resources/font/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+		<script src="/QR_pay/resources/js/jquery-1.9.1.min.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/jquery.cookie.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/Sellerber.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/shopFrame.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/jquery.nicescroll.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/vue.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/axios-0.18.0.js" type="text/javascript"></script>
+		<title>首页</title>
+	</head>
+
+	<body id="iframe_box">
+		<div id="index_style" style="height:100%" class="clearfix">
+			<div class="spacing_style"></div>
+			<div id="app">
+				<div class="center  clearfix margin-bottom">
+					<!--店铺信息-->
+					<div class="col-lg-2 col-xs-3 col-md-3 ">
+						<div class="com_plate_style clearfix">
+							<div class="set-time clearfix" id="set-time"></div>
+						</div>
+					</div>
+					<div class="col-lg-7 col-xs-6 col-md-6 ">
+						<div class="Shops_info clearfix frame">
+							<div class="left_shop">
+								<div class="left_shop_logo">
+									<div class="shop_logo"><span class="bg_yuan"></span><img src="/QR_pay/resources/images/dp_logo.jpg" /></div>
+									<a href="#" class="btn bg-deep-blue paddings">进入首页</a>
+								</div>
+								<div class="Shops_content">
+									<p><label class="name">商城名称：</label>QR码移动支付购物网</p>
+									<ul class="clearfix">
+										<li><label class="name">商城类型：</label>电子商务</li>
+										<li><label class="name">销售类型：</label>综合</li>
+										<li><label class="name">注册时间：</label>2016-08-21</li>
+										<!--<li><label class="name">当前商家ID：</label>{{shop.id}}</li>-->
+									</ul>
+								</div>
+
+								<div class="right_shop">
+									<p> 商城动态评分：</p>
+									<ul>
+										<li><label class="name">相符描述</label><span class="score">100分</span></li>
+										<li><label class="name">服务态度</label><span class="score">100分</span></li>
+										<li><label class="name">支付安全</label><span class="score">100分</span></li>
+									</ul>
+								</div>
+							</div>
+							<div class="operating_style Quick_operation menuUl">
+								<ul class="submenu">
+									<li class="">
+										<a href="javascript:void(0)" name="add_product.html" class="btn" title="添加产品">添加产品</a>
+									</li>
+									<li class="">
+										<a href="javascript:void(0)" name="add_Advertising.html" class="btn" title="添加广告">添加广告</a>
+									</li>
+									<li class="">
+										<a href="javascript:void(0)" name="add_Promotion.html" class="btn" title="添加促销">添加促销</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class=" col-xs-3">
+						<div class="margin-bottom clearfix ">
+							<div>
+								<a href="javascript:void()" class="tile-button btn_Plate bg-green">
+									<div class="carousel Module_info">
+
+										<div class="left_img bg_color_green">
+											<i class="fa fa-cny"></i>
+											<h3>成交金额</h3>
+										</div>
+										<div class="right_info">{{shop.balance}}</div>
+
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<!---->
+
+	</body>
+
+</html>
+<script>
+	//设置框架
+	$(function() {
+		$("#iframe_box").frame({
+			float: 'left',
+			Scroll: '#index_style',
+			color_btn: '.skin_select',
+			Sellerber_menu: '.list_content',
+			page_content: '.list_show', //内容
+			datalist: ".datatable_height", //数据列表高度取值
+			time: '#set-time',
+		});
+	});
+
+	new Vue({
+		el: '#app',
+		data: {
+			shop: {
+				id: "",
+				shopName: "",
+				phone: "",
+				balance: ""
+			},
+			backendUrl: "http://www.qrpaylzs.store:6002",
+			webUrl: "http://www.qrpaylzs.store:8020/QR_pay"
+		},
+		beforeMount: function() {
+			axios.defaults.withCredentials = true;
+			axios.get(this.backendUrl + "/shop/getName").then((res) => {
+				if(res.data.flag) {
+					this.shop = res.data.data;
+				} else {
+					alert(res.data.message);
+					location.href = this.webUrl + "/shop/login.html";
+				}
+			})
+		},
+		methods: {
+
+		}
+	})
+</script>

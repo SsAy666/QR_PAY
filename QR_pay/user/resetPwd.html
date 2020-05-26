@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="author" content="Kodinger">
+		<title>修改密码</title>
+		<link href="/QR_pay/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link href="/QR_pay/resources/css/my-login.css" rel="stylesheet" type="text/css">
+	</head>
+
+	<body class="my-login-page">
+		<section class="h-100">
+			<div class="container h-100" id="app">
+				<div class="row justify-content-md-center align-items-center h-100">
+					<div class="card-wrapper">
+						<div class="brand">
+							<img src="/QR_pay/resources/images/avatar1.png" />
+						</div>
+						<div class="card fat">
+							<div class="card-body">
+								<h4 class="card-title">修改密码</h4>
+								<form method="POST">
+
+									<div class="form-group">
+
+										<input id="new-password" type="password" class="form-control" name="oldPwd" v-model="oldPwd" placeholder="请输入原密码" required autofocus data-eye>
+										<label for="new-password"></label>
+										<input id="new-password" type="password" class="form-control" name="newPwd" v-model="newPwd" placeholder="请输入新密码" required autofocus data-eye>
+										<label for="new-password"></label>
+										<input id="new-password" type="password" class="form-control" name="newPwd2" v-model="newPwd2" placeholder="再次输入新密码" required autofocus data-eye>
+										<div class="form-text text-muted">
+											密码长度不少于六位
+										</div>
+									</div>
+
+									<div class="form-group no-margin">
+										<button type="button" class="btn btn-primary btn-block" @click="updatePwd()">
+										确认修改
+									</button>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="footer">
+							Copyright &copy; QR Pay System
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<script src="/QR_pay/resources/js/jquery.min.js"></script>
+		<script src="/QR_pay/resources/bootstrap/js/bootstrap.min.js"></script>
+		<script src="/QR_pay/resources/js/my-login.js"></script>
+		<script src="/QR_pay/resources/js/vue.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/axios-0.18.0.js" type="text/javascript"></script>
+
+		<script>
+			new Vue({
+				el: '#app',
+				data: {
+					oldPwd: "",
+					newPwd: "",
+					newPwd2: "",
+					user: {},
+					backendUrl: "http://www.qrpaylzs.store:6001",
+					webUrl: "http://www.qrpaylzs.store:8020/QR_pay"
+				},
+				beforeMount: function() {
+					axios.defaults.withCredentials = true;
+					axios.get(this.backendUrl + "/user/getName").then((res) => {
+						if(res.data.flag) {
+							this.user = res.data.data;
+						} else {
+							alert(res.data.message);
+							location.href = this.webUrl + "/user/login.html";
+						}
+					})
+				},
+				methods: {
+					// 重置表单
+					resetForm() {
+						this.oldPwd = "",
+						this.newPwd = "",
+						this.newPwd2 = ""
+					},
+					updatePwd() {
+						var param = {
+							oldPwd: this.oldPwd,
+							newPwd: this.newPwd,
+							userId: this.user.id
+						}
+						axios.defaults.withCredentials = true;
+						axios.post(this.backendUrl + "/user/updatePwd", param).then((res) => {
+							if(res.data.flag) {
+								alert(res.data.message);
+								location.href = this.webUrl + "/user/index.html";
+							} else {
+								alert(res.data.message);
+								this.resetForm();
+								location.href = this.webUrl + "/user/resetPwd.html";
+							}
+						})
+					}
+				}
+			})
+		</script>
+	</body>
+
+</html>

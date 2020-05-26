@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link href="/QR_pay/resources/css/shop.css" type="text/css" rel="stylesheet" />
+		<link href="/QR_pay/resources/css/Sellerber.css" type="text/css" rel="stylesheet" />
+		<link href="/QR_pay/resources/css/bkg_ui.css" type="text/css" rel="stylesheet" />
+		<script src="/QR_pay/resources/js/jquery-1.9.1.min.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/layer/layer.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/Sellerber.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/shopFrame.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/jquery.cookie.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/vue.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/axios-0.18.0.js" type="text/javascript"></script>
+		<title>充值金额</title>
+	</head>
+
+	<body>
+		<div class="margin Competence_style" id="page_style">
+			<div id="header" style="min-height: 90px;" align="center">
+				<h1 style="color: red;">当前余额：&yen;{{balance}}</h1>
+			</div>
+
+			<div style="text-align:center;vertical-align:middle;">
+				<input name="amount" type="text" size="20" placeholder="请输入金额" v-model="amount" />
+				<button class="btn button_btn bg-deep-blue " @click="recharge()" type="button">
+					<i class="fa  fa-search"></i>充值
+				</button>
+
+			</div>
+
+		</div>
+	</body>
+
+</html>
+<script>
+	new Vue({
+		el: '#page_style',
+		data: {
+			user: {},
+			balance: "",
+			amount: "",
+			backendUrl: "http://www.qrpaylzs.store:6001",
+			webUrl: "http://www.qrpaylzs.store:8020/QR_pay"
+		},
+		beforeMount: function() {
+			axios.defaults.withCredentials = true;
+			axios.get(this.backendUrl + "/user/getName").then((res) => {
+				if(res.data.flag) {
+					this.user = res.data.data;
+					axios.defaults.withCredentials = true;
+					axios.get(this.backendUrl + "/user/getAmount?id=" + this.user.id).then((res) => {
+						if(res.data.flag) {
+							this.balance = res.data.data;
+						} else {
+							alert(res.data.message);
+						}
+					})
+				} else {
+					alert(res.data.message);
+					location.href = this.webUrl + "/user/login.html";
+				}
+			})
+		},
+		methods: {
+			recharge() {
+				var param = {
+					amount:this.amount,
+					userId:this.user.id
+				}
+				axios.defaults.withCredentials = true;
+				axios.post(this.backendUrl + "/user/recharge",param).then((res) => {
+
+					alert(res.data.message);
+					location.href = this.webUrl + "/user/add_money.html";
+
+				})
+			}
+		}
+	})
+</script>

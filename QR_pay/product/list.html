@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>商品列表</title>
+		<link href="/QR_pay/resources/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<script src="/QR_pay/resources/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/bootstrap/js/bootstrap.min.js"></script>
+		<script src="/QR_pay/resources/js/vue.js" type="text/javascript"></script>
+		<script src="/QR_pay/resources/js/axios-0.18.0.js" type="text/javascript"></script>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div id="header" style="min-height: 130px;">
+				<div class="col-md-12">
+					<img src="/QR_pay/resources/images/list_logo.png" />
+				</div>
+			</div>
+			
+			<div class="container" id="products">
+				<div class="row" style="width:1210px;margin:0 auto;">
+
+					<div v-for="p in products" class="col-md-2" style="text-align:center;height:200px;padding:10px 0px;">
+						<a :href="'/QR_pay/product/info.html?pid='+p.pid">
+							<img :src="'/QR_pay/'+p.pimage" width="170" height="130" style="display: inline-block;">
+						</a>
+						<p>
+							<a href="info.htmll" style='color:green'>{{p.pname}}</a>
+						</p>
+						<p>
+							<font color="#FF0000">商城价：&yen;{{p.shopPrice}}</font>
+						</p>
+					</div>
+
+				</div>
+
+				<!--分页 -->
+				<div style="width:380px;margin:0 auto;margin-top:50px;">
+					<ul class="pagination" style="text-align:center; margin-top:10px;">
+						<li class="disabled">
+							<a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+						</li>
+						<li class="active">
+							<a href="#">1</a>
+						</li>
+						<li>
+							<a href="#">2</a>
+						</li>
+						<li>
+							<a href="#">3</a>
+						</li>
+						<li>
+							<a href="#">4</a>
+						</li>
+						<li>
+							<a href="#">5</a>
+						</li>
+						<li>
+							<a href="#">6</a>
+						</li>
+						<li>
+							<a href="#">7</a>
+						</li>
+						<li>
+							<a href="#">8</a>
+						</li>
+						<li>
+							<a href="#">9</a>
+						</li>
+						<li>
+							<a href="#" aria-label="Next">
+								<span aria-hidden="true">&raquo;</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="container-fluid">
+				<div style="text-align: center;margin-top: 5px;margin-bottom:20px;">
+					Copyright &copy; QR Pay System
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		new Vue({
+			el: '#products',
+			data: {
+				products:{},
+				backendUrl: "http://www.qrpaylzs.store:6002",
+				webUrl: "http://www.qrpaylzs.store:8020/QR_pay"
+			},
+			beforeMount: function() {
+				axios.defaults.withCredentials = true;
+				axios.get(this.backendUrl + "/product/showAllProduct").then((res) => {
+					if(res.data.flag) {
+						this.products = res.data.data;
+					} else {
+						alert(res.data.message);
+					}
+				})
+			}
+		})
+	</script>
+
+</html>
